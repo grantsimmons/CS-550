@@ -9,7 +9,7 @@
 ###############################################################################
 
 # Example string
-ascii_string = "Hello, ebcdic world! I'm ASCII!"
+ascii_string = "Hello, EBCDIC world! I'm ASCII!"
 
 
 
@@ -52,24 +52,41 @@ class bidict(dict):
             del self.inverse[self[key]]
         super(bidict, self).__delitem__(key)
 
-def ascii_to_ebcdic(char_map, my_string):
-    # Convert an ASCII string to EBCDIC-encoded byte array
-    ebcdic_arr = []
+def generate_ascii(my_string):
+    ascii_hex = []
     for char in my_string: #Iterate string characters
-        ebcdic_char = char_map[codecs.encode(bytes(char, "ascii"), "hex")] or b'3f' #Extract ASCII bytes and index provided map
-        if ebcdic_char == b'3f' or ebcdic_char == b'1a':
+        #Encode as ASCII, extract bytes as hex, and convert
+        ascii_char = codecs.encode(bytes(char, "ascii"), "hex")
+        ascii_hex.append(ascii_char)
+    return ascii_hex
+
+def ascii_to_ebcdic(char_map, ascii_bytes):
+    # Convert an ASCII string to EBCDIC-encoded byte array
+    ebcdic_byte_arr = []
+    for byte in ascii_bytes: #Iterate string characters
+        #Encode as ASCII, extract bytes as hex, and convert
+        ebcdic_byte = char_map[byte]
+        if ebcdic_byte == b'3f' or ebcdic_byte == b'1a':
             print("Warning: failed to convert ASCII symbol: ", char)
             print("  Output string may contain unexpected characters")
-        ebcdic_arr.append(ebcdic_char) #Append converted byte to return array
-    return ebcdic_arr
+        ebcdic_byte_arr.append(ebcdic_byte) #Append converted byte to return array
+    return ebcdic_byte_arr
 
-def ebcdic_to_ascii(char_map, my_string):
+def generate_ebcdic(ebcdic_string):
+    ebcdic_hex = []
+    for char in ebcdic_string: #Iterate string characters
+        #Encode as ASCII, extract bytes as hex, and convert
+        ebcdic_char = codecs.encode(bytes(char, "cp500"), "hex")
+        ebcdic_hex.append(ebcdic_char)
+    return ebcdic_hex
+
+def ebcdic_to_ascii(char_map, ebcdic_bytes):
     # Convert an EBCDIC string to ASCII-encoded byte array (Experimental, untested)
-    ascii_arr = []
-    for char in my_string:
-        (ascii_char,) = char_map.inverse[codecs.encode(bytes(char, "cp037"), "hex")]
-        ascii_arr.append(ascii_char)
-    return ascii_arr
+    ascii_byte_arr = []
+    for byte in ebcdic_bytes:
+        (ascii_char,) = char_map.inverse[byte]
+        ascii_byte_arr.append(ascii_char)
+    return ascii_byte_arr
 
 # ASCII-EBCDIC encoding map
 # Source: https://www.ibm.com/support/knowledgecenter/SSZJPZ_11.7.0/com.ibm.swg.im.iis.ds.parjob.adref.doc/topics/r_deeadvrf_ASCII_to_EBCDIC.html
@@ -96,8 +113,25 @@ ascii_ebcdic_map = bidict(
 )
 
 #Perform ASCII-EBCDIC conversion
-print(ascii_to_ebcdic(ascii_ebcdic_map, ascii_string))
+ascii_bytes = generate_ascii(ascii_string)
+ebcdic_bytes = ascii_to_ebcdic(ascii_ebcdic_map, ascii_bytes)
+print("Original string:\n", ascii_string)
+print("ASCII bytes:\n", ascii_bytes)
+print("Decoding with Python ascii for Sanity Check:")
+print(codecs.decode(b''.join(ascii_bytes), "hex"))
+print("EBCDIC bytes:\n", ebcdic_bytes)
+print("Decoding with Python cp500 for Sanity Check:")
+print(codecs.decode(b''.join(ebcdic_bytes), "hex").decode("cp500"))
 
 #Go the other way! (Experimental, untested)
-ebcdic_string = "Hello, ascii world! I'm EBCDIC!"
-print(ebcdic_to_ascii(ascii_ebcdic_map, ebcdic_string))
+#ebcdic_string = "Hello, ASCII world! I'm EBCDIC!"
+ebcdic_string = "Hello, ASCII world! I'm EBCDIC!"
+ebcdic_bytes = generate_ebcdic(ebcdic_string)
+ascii_bytes = ebcdic_to_ascii(ascii_ebcdic_map, ebcdic_bytes)
+print("Original string:\n", ebcdic_string)
+print("EBCDIC bytes:\n", ebcdic_bytes)
+print("Decoding with Python cp500 for Sanity Check:")
+print(codecs.decode(b''.join(ebcdic_bytes), "hex").decode("cp500"))
+print("ASCII bytes:\n", ascii_bytes)
+print("Decoding with Python ascii for Sanity Check:")
+print(codecs.decode(b''.join(ascii_bytes), "hex"))
