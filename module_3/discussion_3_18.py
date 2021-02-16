@@ -19,7 +19,7 @@ ascii_string = "Hello, EBCDIC world! I'm ASCII!"
 # Method 1: Using internal Python tools! (Very Easy)
 ###############################################################################
 
-print(ascii_string.encode("cp037"))
+print(ascii_string.encode("cp500"))
 
 
 ###############################################################################
