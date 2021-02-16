@@ -3,6 +3,9 @@
 # Professor: Edward Banduk
 # I pledge my honor that I have abided by the Stevens Honor System.
 
+# Please note: This is not meant to be good Python code; this was a quick exercise 
+# meant to demonstrate the concepts outlined by the question below
+
 ###############################################################################
 #18)  Write a program in your favorite language that will convert all ASCII uppercase and lowercase letters to EBCDIC code. 
 # For an additional challenge, also convert the punctuation symbols, indicating with a failure-to-convert message, those symbols that are not represented in the EBCDIC system.
@@ -12,16 +15,11 @@
 ascii_string = "Hello, EBCDIC world! I'm ASCII!"
 
 
-
-
 ###############################################################################
 # Method 1: Using internal Python tools! (Very Easy)
 ###############################################################################
 
-print(ascii_string.encode("cp037")) #Probably the simplest way
-
-
-
+print(ascii_string.encode("cp037"))
 
 
 ###############################################################################
@@ -84,7 +82,10 @@ def ebcdic_to_ascii(char_map, ebcdic_bytes):
     # Convert an EBCDIC string to ASCII-encoded byte array (Experimental, untested)
     ascii_byte_arr = []
     for byte in ebcdic_bytes:
-        (ascii_char,) = char_map.inverse[byte]
+        ascii_char = char_map.inverse[byte][0] #Grabbing first index because unpacking may throw error
+        if byte == b'3f' or byte == b'1a':
+            print("Warning: failed to convert EBCDIC symbol: ", char)
+            print("  Output string may contain unexpected characters")
         ascii_byte_arr.append(ascii_char)
     return ascii_byte_arr
 
@@ -113,6 +114,7 @@ ascii_ebcdic_map = bidict(
 )
 
 #Perform ASCII-EBCDIC conversion
+ascii_string = "Hello, EBCDIC world! I'm ASCII!" #(Just as a reminder)
 ascii_bytes = generate_ascii(ascii_string)
 ebcdic_bytes = ascii_to_ebcdic(ascii_ebcdic_map, ascii_bytes)
 print("Original string:\n", ascii_string)
@@ -124,7 +126,6 @@ print("Decoding with Python cp500 for Sanity Check:")
 print(codecs.decode(b''.join(ebcdic_bytes), "hex").decode("cp500"))
 
 #Go the other way! (Experimental, untested)
-#ebcdic_string = "Hello, ASCII world! I'm EBCDIC!"
 ebcdic_string = "Hello, ASCII world! I'm EBCDIC!"
 ebcdic_bytes = generate_ebcdic(ebcdic_string)
 ascii_bytes = ebcdic_to_ascii(ascii_ebcdic_map, ebcdic_bytes)
