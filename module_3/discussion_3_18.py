@@ -53,7 +53,7 @@ class bidict(dict):
 def generate_ascii(my_string):
     ascii_hex = []
     for char in my_string: #Iterate string characters
-        #Encode as ASCII, extract bytes as hex, and convert
+        #Encode as ASCII, extract bytes as hex
         ascii_char = codecs.encode(bytes(char, "ascii"), "hex")
         ascii_hex.append(ascii_char)
     return ascii_hex
@@ -62,7 +62,7 @@ def ascii_to_ebcdic(char_map, ascii_bytes):
     # Convert an ASCII string to EBCDIC-encoded byte array
     ebcdic_byte_arr = []
     for byte in ascii_bytes: #Iterate string characters
-        #Encode as ASCII, extract bytes as hex, and convert
+        #Convert ASCII bytes to EBCDIC
         ebcdic_byte = char_map[byte]
         if ebcdic_byte == b'3f' or ebcdic_byte == b'1a':
             print("Warning: failed to convert ASCII symbol: ", char)
@@ -73,7 +73,7 @@ def ascii_to_ebcdic(char_map, ascii_bytes):
 def generate_ebcdic(ebcdic_string):
     ebcdic_hex = []
     for char in ebcdic_string: #Iterate string characters
-        #Encode as ASCII, extract bytes as hex, and convert
+        #Encode as ASCII, extract bytes as hex
         ebcdic_char = codecs.encode(bytes(char, "cp500"), "hex")
         ebcdic_hex.append(ebcdic_char)
     return ebcdic_hex
