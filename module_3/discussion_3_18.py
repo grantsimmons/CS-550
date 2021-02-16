@@ -1,3 +1,8 @@
+# Author: Grant Simmons (gsimmons@stevens.edu)
+# Course: CS-550-WS
+# Professor: Edward Banduk
+# I pledge my honor that I have abided by the Stevens Honor System.
+
 ###############################################################################
 #18)  Write a program in your favorite language that will convert all ASCII uppercase and lowercase letters to EBCDIC code. 
 # For an additional challenge, also convert the punctuation symbols, indicating with a failure-to-convert message, those symbols that are not represented in the EBCDIC system.
@@ -27,8 +32,8 @@ import codecs
 
 # Here's a simple bidirectional dictionary for easy conversion both directions
 class bidict(dict):
-    #Source: https://stackoverflow.com/questions/3318625/how-to-implement-an-efficient-bidirectional-hash-table
-    #Author: Basj
+    # Object Source: https://stackoverflow.com/questions/3318625/how-to-implement-an-efficient-bidirectional-hash-table
+    # Author: Basj (https://stackoverflow.com/users/1422096/basj)
     def __init__(self, *args, **kwargs):
         super(bidict, self).__init__(*args, **kwargs)
         self.inverse = {}
